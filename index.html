@@ -31,7 +31,7 @@ export default function BlogApp() {
 
   const loadComments = async () => {
     try {
-      const result = await window.storage.get('blog-comments');
+      const result = localStorage.getItem('blog-comments');
       if (result && result.value) {
         setComments(JSON.parse(result.value));
       }
@@ -44,7 +44,7 @@ export default function BlogApp() {
 
   const saveComments = async (updatedComments) => {
     try {
-      await window.storage.set('blog-comments', JSON.stringify(updatedComments));
+      localStorage.setItem('blog-comments', JSON.stringify(updatedComments));
       setComments(updatedComments);
     } catch (error) {
       alert('Error al guardar. Intenta de nuevo.');
