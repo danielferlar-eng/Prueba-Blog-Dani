@@ -1,6 +1,3 @@
-<!doctype html>
-
-
 import React, { useState, useEffect } from 'react';
 import { MessageSquare, Send, Trash2 } from 'lucide-react';
 
@@ -8,16 +5,16 @@ const MY_ARTICLES = [
   {
     id: 1,
     title: "Bienvenidos a mi blog",
-    content: "Este es mi primer artículo. Aquí compartiré un poco de todo",
+    content: "Este es mi primer artículo. Aquí compartiré lo que quiera. ¡Espero que lo disfrutes!",
     imageUrl: "https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=800",
-    date: "17/11/2025"
+    date: "17/11/2024"
   },
   {
     id: 2,
-    title: "Segunda publicación",
-    content: "Prueba",
+    title: "Mi segunda publicación",
+    content: "Puedes añadir más artículos editando el array MY_ARTICLES en el código.\n\nCada artículo necesita: id (único), title, content, imageUrl (opcional) y date.",
     imageUrl: "",
-    date: "17/11/202"
+    date: "18/11/2024"
   }
 ];
 
@@ -33,7 +30,7 @@ export default function BlogApp() {
 
   const loadComments = async () => {
     try {
-      const result = localStorage.getItem('blog-comments');
+      const result = await window.storage.get('blog-comments');
       if (result && result.value) {
         setComments(JSON.parse(result.value));
       }
@@ -46,7 +43,7 @@ export default function BlogApp() {
 
   const saveComments = async (updatedComments) => {
     try {
-      localStorage.setItem('blog-comments', JSON.stringify(updatedComments));
+      await window.storage.set('blog-comments', JSON.stringify(updatedComments));
       setComments(updatedComments);
     } catch (error) {
       alert('Error al guardar. Intenta de nuevo.');
