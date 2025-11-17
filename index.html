@@ -1,4 +1,9 @@
-  {
+import React, { useState, useEffect } from 'react';
+import { MessageSquare, Send, Trash2 } from 'lucide-react';
+
+// 🔧 CONFIGURA TUS ARTÍCULOS AQUÍ (Solo tú puedes editarlos)
+const MY_ARTICLES = [
+{
     id: 1,
     title: "Bienvenidos a mi blog",
     content: "Este es mi primer artículo. Aquí compartiré lo que quiera. ¡Espero que lo disfrutes!",
@@ -12,6 +17,7 @@
     imageUrl: "",
     date: "18/11/2024"
   }
+];
 
 export default function BlogApp() {
   const [comments, setComments] = useState({});
