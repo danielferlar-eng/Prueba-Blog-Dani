@@ -1,0 +1,226 @@
+import React, { useState, useEffect } from 'react';
+import { MessageSquare, Send, Trash2 } from 'lucide-react';
+
+// 🔧 CONFIGURA TUS ARTÍCULOS AQUÍ (Solo tú puedes editarlos)
+const MY_ARTICLES = [
+  {
+    id: 1,
+    title: "Bienvenidos a mi blog",
+    content: "Este es mi primer artículo. Aquí compartiré mis pensamientos, ideas y experiencias. ¡Espero que lo disfrutes!",
+    imageUrl: "https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=800",
+    date: "17/11/2024"
+  },
+  {
+    id: 2,
+    title: "Mi segunda publicación",
+    content: "Puedes añadir más artículos editando el array MY_ARTICLES en el código.\n\nCada artículo necesita: id (único), title, content, imageUrl (opcional) y date.",
+    imageUrl: "",
+    date: "18/11/2024"
+  }
+];
+
+export default function BlogApp() {
+  const [comments, setComments] = useState({});
+  const [commentTexts, setCommentTexts] = useState({});
+  const [commentNames, setCommentNames] = useState({});
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadComments();
+  }, []);
+
+  const loadComments = async () => {
+    try {
+      const result = await window.storage.get('blog-comments');
+      if (result && result.value) {
+        setComments(JSON.parse(result.value));
+      }
+    } catch (error) {
+      console.log('No hay comentarios previos');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const saveComments = async (updatedComments) => {
+    try {
+      await window.storage.set('blog-comments', JSON.stringify(updatedComments));
+      setComments(updatedComments);
+    } catch (error) {
+      alert('Error al guardar. Intenta de nuevo.');
+    }
+  };
+
+  const addComment = (articleId) => {
+    const name = commentNames[articleId]?.trim();
+    const text = commentTexts[articleId]?.trim();
+
+    if (!name) {
+      alert('¡Debes escribir tu nombre para comentar!');
+      return;
+    }
+
+    if (!text) {
+      alert('El comentario no puede estar vacío');
+      return;
+    }
+
+    const newComment = {
+      id: Date.now(),
+      name,
+      text,
+      date: new Date().toLocaleString('es-ES')
+    };
+
+    const articleComments = comments[articleId] || [];
+    const updatedComments = {
+      ...comments,
+      [articleId]: [...articleComments, newComment]
+    };
+
+    saveComments(updatedComments);
+    setCommentTexts({ ...commentTexts, [articleId]: '' });
+    setCommentNames({ ...commentNames, [articleId]: '' });
+  };
+
+  const deleteComment = (articleId, commentId) => {
+    const updatedComments = {
+      ...comments,
+      [articleId]: comments[articleId].filter(c => c.id !== commentId)
+    };
+    saveComments(updatedComments);
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-sky-100 via-blue-50 to-pink-100 flex items-center justify-center">
+        <div className="text-xl text-gray-600">Cargando...</div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-sky-100 via-blue-50 to-pink-100 py-8 px-4">
+      <div className="max-w-4xl mx-auto">
+        {/* Header */}
+        <div className="text-center mb-12">
+          <h1 className="text-6xl font-bold bg-gradient-to-r from-blue-600 via-purple-500 to-pink-500 bg-clip-text text-transparent mb-3">
+            Mi Blog
+          </h1>
+          <p className="text-gray-600 text-lg">Comparte tus pensamientos conmigo</p>
+        </div>
+
+        {/* Articles List */}
+        <div className="space-y-8">
+          {MY_ARTICLES.map((article) => {
+            const articleComments = comments[article.id] || [];
+            
+            return (
+              <div key={article.id} className="bg-white rounded-2xl shadow-xl overflow-hidden border border-pink-100">
+                {/* Article Header */}
+                <div className="p-8 bg-gradient-to-r from-blue-50 to-pink-50 border-b border-pink-100">
+                  <h2 className="text-4xl font-bold text-gray-800 mb-2">{article.title}</h2>
+                  <p className="text-sm text-gray-500 flex items-center gap-2">
+                    📅 {article.date}
+                  </p>
+                </div>
+
+                {/* Article Image */}
+                {article.imageUrl && (
+                  <img
+                    src={article.imageUrl}
+                    alt={article.title}
+                    className="w-full h-80 object-cover"
+                    onError={(e) => e.target.style.display = 'none'}
+                  />
+                )}
+
+                {/* Article Content */}
+                <div className="p-8">
+                  <p className="text-gray-700 whitespace-pre-wrap leading-relaxed text-lg">
+                    {article.content}
+                  </p>
+                </div>
+
+                {/* Comments Section */}
+                <div className="p-8 bg-gradient-to-br from-blue-50 to-pink-50 border-t border-pink-100">
+                  <div className="flex items-center gap-2 mb-6">
+                    <MessageSquare className="w-6 h-6 text-purple-600" />
+                    <h3 className="text-xl font-semibold text-gray-800">
+                      Comentarios ({articleComments.length})
+                    </h3>
+                  </div>
+
+                  {/* Existing Comments */}
+                  {articleComments.length > 0 && (
+                    <div className="space-y-4 mb-6">
+                      {articleComments.map((comment) => (
+                        <div key={comment.id} className="bg-white p-5 rounded-xl shadow-md border border-pink-100">
+                          <div className="flex justify-between items-start mb-2">
+                            <div>
+                              <p className="font-bold text-purple-700">{comment.name}</p>
+                              <p className="text-xs text-gray-500">{comment.date}</p>
+                            </div>
+                            <button
+                              onClick={() => deleteComment(article.id, comment.id)}
+                              className="text-pink-500 hover:text-pink-700 transition-colors"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                          <p className="text-gray-700 leading-relaxed">{comment.text}</p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Add Comment Form */}
+                  <div className="space-y-4">
+                    <div className="bg-white p-6 rounded-xl shadow-md border-2 border-pink-200">
+                      <h4 className="font-semibold text-gray-800 mb-4 text-lg">💬 Deja tu comentario</h4>
+                      
+                      <input
+                        type="text"
+                        placeholder="Tu nombre *"
+                        value={commentNames[article.id] || ''}
+                        onChange={(e) => setCommentNames({ ...commentNames, [article.id]: e.target.value })}
+                        className="w-full mb-3 p-4 border-2 border-blue-200 rounded-xl focus:border-purple-400 focus:outline-none transition-colors"
+                      />
+                      
+                      <textarea
+                        placeholder="Escribe tu comentario aquí..."
+                        value={commentTexts[article.id] || ''}
+                        onChange={(e) => setCommentTexts({ ...commentTexts, [article.id]: e.target.value })}
+                        rows="4"
+                        className="w-full mb-4 p-4 border-2 border-blue-200 rounded-xl focus:border-purple-400 focus:outline-none resize-none transition-colors"
+                      />
+                      
+                      <button
+                        onClick={() => addComment(article.id)}
+                        className="w-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 hover:from-blue-600 hover:via-purple-600 hover:to-pink-600 text-white font-bold py-4 px-6 rounded-xl transition-all transform hover:scale-105 shadow-lg flex items-center justify-center gap-2"
+                      >
+                        <Send className="w-5 h-5" />
+                        Enviar Comentario
+                      </button>
+                      
+                      <p className="text-xs text-gray-500 mt-3 text-center">
+                        * El nombre es obligatorio para comentar
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Footer */}
+        <div className="text-center mt-12 py-6">
+          <p className="text-gray-500 text-sm">
+            💡 Para añadir artículos, edita el array <code className="bg-white px-2 py-1 rounded text-purple-600">MY_ARTICLES</code> en el código
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
