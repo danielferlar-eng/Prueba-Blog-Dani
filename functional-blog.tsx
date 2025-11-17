@@ -6,16 +6,16 @@ const MY_ARTICLES = [
   {
     id: 1,
     title: "Bienvenidos a mi blog",
-    content: "Este es mi primer artículo. Aquí compartiré mis pensamientos, ideas y experiencias. ¡Espero que lo disfrutes!",
+    content: "Este es mi primer artículo. Aquí compartiré lo que quiera. ¡Espero que lo disfrutes!",
     imageUrl: "https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=800",
-    date: "17/11/2024"
+    date: "17/11/2025"
   },
   {
     id: 2,
     title: "Mi segunda publicación",
-    content: "Puedes añadir más artículos editando el array MY_ARTICLES en el código.\n\nCada artículo necesita: id (único), title, content, imageUrl (opcional) y date.",
-    imageUrl: "",
-    date: "18/11/2024"
+    content: "Esta es la version 2.0 de un blog que salió mal, haber si este va mejor😄",
+    imageUrl: "https://i.pinimg.com/736x/cb/3e/01/cb3e014d6122af3b43933bb571859ae7.jpg",
+    date: "17/11/2025"
   }
 ];
 
@@ -56,7 +56,7 @@ export default function BlogApp() {
     const text = commentTexts[articleId]?.trim();
 
     if (!name) {
-      alert('¡Debes escribir tu nombre para comentar!');
+      alert('¡Escribe tu nombre para comentar, que quiero saber quien eres!');
       return;
     }
 
@@ -217,7 +217,7 @@ export default function BlogApp() {
         {/* Footer */}
         <div className="text-center mt-12 py-6">
           <p className="text-gray-500 text-sm">
-            💡 Para añadir artículos, edita el array <code className="bg-white px-2 py-1 rounded text-purple-600">MY_ARTICLES</code> en el código
+            <code className="bg-white px-2 py-1 rounded text-purple-600">Daniel Fernandez Lara</code>
           </p>
         </div>
       </div>
